@@ -5,8 +5,8 @@ import pickle
 import random
 import re
 
-
-TINY = 1e-200
+TINY = np.finfo('f').tiny
+HUGE = np.finfo('f').max
 
 def sigmoid(x):
     return 1. / (1 + np.exp(-x))
@@ -36,6 +36,7 @@ def load_data(raw_sentences_path, N=4):
 
 class NeuralNet(object):
     def __init__(self, seed=0,
+                 r_mean=0, r_std=0.01,
                  vocab_size=250,
                  n_words_in=3,
                  n_embed=50,
@@ -48,8 +49,7 @@ class NeuralNet(object):
         self.N_OUT = vocab_size
 
         np.random.seed(seed)
-        r_mean = 0
-        r_std = 0.01
+
         self.w1 = np.random.normal(r_mean, r_std, (self.N_IN, self.N_EMBED))
         self.w2 = np.random.normal(r_mean, r_std, (self.N_WORDS_IN * self.N_EMBED, self.N_HIDDEN))
         self.b2 = np.random.normal(r_mean, r_std, self.N_HIDDEN)
@@ -80,8 +80,8 @@ class NeuralNet(object):
         self.hidden = sigmoid(self.hidden)
         self.output = np.dot(self.hidden, self.w3) + self.b3
         self.output = np.exp(self.output)
+        self.output[np.isposinf(self.output)] = HUGE
         self.output = self.output / self.output.sum(axis=1).reshape((n_samples, 1))
-        return self.output
 
     def error_CE(self, y_true):
         n_samples = y_true.shape[0]
@@ -133,28 +133,49 @@ class NeuralNet(object):
         return CE
 
 
-    def train(self,
-              X_train, y_train,
-              X_valid, y_valid,
-              batchsize=100, n_epoch=5,
-              learning_rate=0.1, momentum=0.9):
+    def train(self, X_train, y_train, X_valid, y_valid,
+              batchsize=100, n_epoch=10, save_epoch=[1, 10],
+              learning_rate=0.1, momentum=0.9, verbose=True):
         n_samples_train = X_train.shape[0]
         n_batches = n_samples_train // batchsize + 1
 
-        for i_epoch in range(n_epoch):
-            print('=== EPOCH {} ==='.format(i_epoch))
+        for i_epoch in range(1, n_epoch+1):
+            if verbose:
+                print('=== EPOCH {} ==='.format(i_epoch))
+
+            chunk_CE = 0
             for i in range(n_batches):
                 X_batch = X_train[(batchsize*i):(batchsize*(i+1)), :]
                 y_batch = y_train[(batchsize*i):(batchsize*(i+1))]
-                CE = self.b_prop(X_batch, y_batch, learning_rate, momentum)
-                if i % 100 == 0 and i != 0:
-                    print('Batch {}, CE: {:.3f}'.format(i, CE))
-            self.f_prop(X_valid)
-            CE = self.error_CE(y_valid)
-            print('EPOCH {}, Val CE: {:.3f}'.format(i_epoch, CE))
-            print()
-            self.dump_weights('weights/epoch_{}.n_embed_{}.n_hidden_{}.'.format(
-                              i_epoch, self.N_EMBED, self.N_HIDDEN))
+                chunk_CE += self.b_prop(X_batch, y_batch, learning_rate, momentum)
+                if verbose and i % 100 == 0 and i != 0:
+                    print('Batch {}, train CE: {:.3f}'.format(i, chunk_CE / batchsize))
+                    chunk_CE = 0
+
+            valid_CE = self.get_CE(X=X_valid, y=y_valid)
+            if verbose:
+                print('Validation CE: {:.3f}'.format(valid_CE))
+
+            if i_epoch in save_epoch:
+                self.dump_weights('weights/epoch_{}.n_embed_{}.n_hidden_{}.lr_{:.0e}.m_{:.0e}'.format(
+                                  i_epoch, self.N_EMBED, self.N_HIDDEN, learning_rate, momentum))
+
+    def get_CE(self, X, y, batchsize=100, verbose=False):
+        n_samples = X.shape[0]
+        n_batches = n_samples // batchsize + 1
+
+        total_CE = 0
+        for i in range(n_batches):
+            X_batch = X[(batchsize*i):(batchsize*(i+1)), :]
+            y_batch = y[(batchsize*i):(batchsize*(i+1))]
+            self.f_prop(X_batch)
+            batch_CE = self.error_CE(y_batch) * X_batch.shape[0]
+            total_CE += batch_CE
+            if verbose and i % 100 == 0 and i != 0:
+                print('Batch {}/{}'.format(i, n_batches))
+
+        mean_CE = total_CE / X.shape[0]
+        return mean_CE
 
     def dump_weights(self, path):
         weights = [self.w1, self.w2, self.b2, self.w3, self.b3]
@@ -167,22 +188,3 @@ class NeuralNet(object):
 if __name__ == '__main__':
     vocab, train_set, valid_set, test_set = load_data('data/raw_sentences.txt')
     nn = NeuralNet()
-    nn.train(
-        X_train=train_set[:, :-1],
-        y_train=train_set[:, -1],
-        X_valid=valid_set[:, :-1],
-        y_valid=valid_set[:, -1],
-        batchsize=100, n_epoch=10
-    )
-    # nn.load_weights('weights/weights.epoch_4.npz')
-    # for trip in [['city', 'of', 'new'],
-    #              ['government', 'of', 'united'],
-    #              ['life', 'in', 'the'],
-    #              ['he', 'is', 'the']]:
-    #     trip_index = np.array([vocab.index(word) for word in trip]).reshape((1, 3))
-    #     out = nn.f_prop(trip_index)
-    #     print(trip)
-    #     for n, prob in enumerate(out[0]):
-    #         if prob > 0.01:
-    #             print(prob, vocab[n])
-    #     print()
