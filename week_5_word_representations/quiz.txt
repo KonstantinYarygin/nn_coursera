@@ -56,7 +56,7 @@ Which model gives the best training set cross entropy after 10 epochs of trainin
 
 ( ) Model A
 ( ) Model B
-( ) Model C
+(x) Model C
 ( ) Model D
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -66,7 +66,7 @@ In the models trained in Question 7, which one gives the best validation set cro
 
 ( ) Model A
 ( ) Model B
-( ) Model C
+(x) Model C
 ( ) Model D
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -80,7 +80,7 @@ Use the default settings for all other hyperparameters. Which model gives the lo
 
 ( ) Model A
 ( ) Model B
-( ) Model C
+(x) Model C
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -89,8 +89,8 @@ Train a model with 50 dimensional embedding layer and 200 dimensional hidden lay
 Which words are among the 10 closest words to the word 'day'. [2 points]
 
 [ ] 'during'
-[ ] 'week'
-[ ] 'night'
+[x] 'week'
+[x] 'night'
 [ ] 'today'
 
 = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
