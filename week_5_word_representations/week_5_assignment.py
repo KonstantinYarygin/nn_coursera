@@ -1,4 +1,3 @@
-from scipy.special import expit
 import pandas as pd
 import numpy as np
 import pickle
@@ -157,8 +156,10 @@ class NeuralNet(object):
                 print('Validation CE: {:.3f}'.format(valid_CE))
 
             if i_epoch in save_epoch:
-                self.dump_weights('weights/epoch_{}.n_embed_{}.n_hidden_{}.lr_{:.0e}.m_{:.0e}'.format(
-                                  i_epoch, self.N_EMBED, self.N_HIDDEN, learning_rate, momentum))
+                lr = str(float(learning_rate)).rstrip('0').replace('.', '')
+                m = str(float(momentum)).rstrip('0').replace('.', '')
+                self.dump_weights('weights/epoch_{}.n_embed_{}.n_hidden_{}.lr_{}.m_{}'.format(
+                                  i_epoch, self.N_EMBED, self.N_HIDDEN, lr, m))
 
     def get_CE(self, X, y, batchsize=100, verbose=False):
         n_samples = X.shape[0]
@@ -188,3 +189,9 @@ class NeuralNet(object):
 if __name__ == '__main__':
     vocab, train_set, valid_set, test_set = load_data('data/raw_sentences.txt')
     nn = NeuralNet()
+    nn.train(
+        X_train=train_set[:, :-1],
+        y_train=train_set[:, -1],
+        X_valid=valid_set[:, :-1],
+        y_valid=valid_set[:, -1]
+    )
