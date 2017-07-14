@@ -1,0 +1,124 @@
+
+2.
+Train a model with 50 dimensional embedding space, 200 dimensional hidden layer and default setting of all other hyperparameters. What is average validation set cross entropy as reported by the training program after 10 epochs ? Please provide a numeric answer (three decimal places). [4 points]
+
+2.606
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+3.
+Train a model for 10 epochs with a 50 dimensional embedding space, 200 dimensional hidden layer, a learning rate of 100.0 and default setting of all other hyperparameters. What do you observe ? [3 points]
+
+[ ] Cross Entropy on the training set fluctuates wildly and eventually diverges.
+[ ] Cross Entropy on the training set decreases smoothly but fluctuates around a large value on the validation set.
+[x] Cross Entropy on the training set fluctuates around a large value.
+[x] Cross Entropy on the validation set fluctuates around a large value.
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+4.
+If all weights and biases in this network were set to zero and no training is performed, what will be the average cross entropy on the training set ? Please provide a numeric answer (three decimal places). [3 points]
+
+5.521
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+5.
+Train three models each with 50 dimensional embedding space, 200 dimensional hidden layer.
+ - Model A: Learning rate = 0.001,
+ - Model B: Learning rate = 0.1
+ - Model C: Learning rate = 10.0.
+Use a momentum of 0.5 and default settings for all other hyperparameters. Which model gives the lowest training set cross entropy after 1 epoch ? [3 points]
+
+( ) Model A
+( ) Model B
+(x) Model C
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+6.
+In the models trained in Question 5, which one gives the lowest training set cross entropy after 10 epochs ? [2 points]
+
+( ) Model A
+(x) Model B
+( ) Model C
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+7.
+Train each of following models:
+ - Model A: 5 dimensional embedding, 100 dimensional hidden layer
+ - Model B: 50 dimensional embedding, 10 dimensional hidden layer
+ - Model C: 50 dimensional embedding, 200 dimensional hidden layer
+ - Model D: 100 dimensional embedding, 5 dimensional hidden layer
+Use default values for all other hyperparameters.
+Which model gives the best training set cross entropy after 10 epochs of training ? [3 points]
+
+( ) Model A
+( ) Model B
+(x) Model C
+( ) Model D
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+8.
+In the models trained in Question 7, which one gives the best validation set cross entropy after 10 epochs of training ? [2 points]
+
+( ) Model A
+( ) Model B
+(x) Model C
+( ) Model D
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+9.
+Train three models each with 50 dimensional embedding space, 200 dimensional hidden layer.
+ - Model A: Momentum = 0.0
+ - Model B: Momentum = 0.5
+ - Model C: Momentum = 0.9
+Use the default settings for all other hyperparameters. Which model gives the lowest training set cross entropy after 5 epochs ? [3 points]
+
+( ) Model A
+( ) Model B
+(x) Model C
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+10.
+Train a model with 50 dimensional embedding layer and 200 dimensional hidden layer for 10 epochs. Use default values for all other hyperparameters.
+Which words are among the 10 closest words to the word 'day'. [2 points]
+
+[ ] 'during'
+[x] 'week'
+[x] 'night'
+[ ] 'today'
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+11.
+In the model trained in Question 10, why is the word 'percent' close to 'dr.' even though they have very different contexts and are not expected to be close in word embedding space? [2 points]
+
+( ) The model is not capable of separating them in embedding space, even if it got a much larger training set.
+( ) Both words occur too frequently.
+( ) We trained the model with too large a learning rate.
+(x) Both words occur very rarely, so their embedding weights get updated very few times and remain close to their initialization.
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+12.
+In the model trained in Question 10, why is 'he' close to 'she' even though they refer to completely different genders? [2 points]
+
+( ) Both words occur very rarely, so their embedding weights get updated very few times and remain close to their initialization.
+( ) They differ by only one letter.
+(x) The model does not care about gender. It puts them close because if 'he' occurs in a 4-gram, it is very likely that substituting it by 'she' will also make a sensible 4-gram.
+( ) They often occur close by in sentences.
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+13.
+In conclusion, what kind of words does the model put close to each other in embedding space. Choose the most appropriate answer. [3 points]
+
+( ) Words that occur close to each other (within three words to the left or right) in many sentences.
+( ) Words that occur close in an alphabetical sort.
+( ) Words that belong to similar topics. A topic is a semantic categorization (like 'sports', 'art', 'business', 'computers' etc).
+(x) Words that can be substituted for one another and still make up a sensible 4-gram.
